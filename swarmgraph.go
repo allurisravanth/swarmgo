@@ -8,8 +8,8 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/allurisravanth/swarmgo/llm"
 	"github.com/google/uuid"
-	"github.com/prathyushnallamothu/swarmgo/llm"
 )
 
 // LangGraph inspired workflow system

@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
+	swarmgo "github.com/allurisravanth/swarmgo"
+	"github.com/allurisravanth/swarmgo/llm"
 	"github.com/joho/godotenv"
-	swarmgo "github.com/prathyushnallamothu/swarmgo"
-	"github.com/prathyushnallamothu/swarmgo/llm"
 )
 
 // Simple task management workflow example

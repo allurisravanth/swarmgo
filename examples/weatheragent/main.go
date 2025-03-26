@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
+	swarmgo "github.com/allurisravanth/swarmgo"
+	"github.com/allurisravanth/swarmgo/llm"
 	dotenv "github.com/joho/godotenv"
-	swarmgo "github.com/prathyushnallamothu/swarmgo"
-	"github.com/prathyushnallamothu/swarmgo/llm"
 )
 
 // getWeather simulates getting weather data for a location

@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"os"
 
+	swarmgo "github.com/allurisravanth/swarmgo"
+	"github.com/allurisravanth/swarmgo/llm"
 	dotenv "github.com/joho/godotenv"
-	swarmgo "github.com/prathyushnallamothu/swarmgo"
-	"github.com/prathyushnallamothu/swarmgo/llm"
 )
 
 func getWeather(args map[string]interface{}, contextVariables map[string]interface{}) swarmgo.Result {

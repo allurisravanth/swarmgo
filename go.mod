@@ -1,4 +1,4 @@
-module github.com/prathyushnallamothu/swarmgo
+module github.com/allurisravanth/swarmgo
 
 go 1.23.4
 

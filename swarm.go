@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/prathyushnallamothu/swarmgo/llm"
+	"github.com/allurisravanth/swarmgo/llm"
 )
 
 var (

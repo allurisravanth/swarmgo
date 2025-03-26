@@ -5,9 +5,9 @@ import (
 	"log"
 	"os"
 
+	swarm "github.com/allurisravanth/swarmgo"
+	"github.com/allurisravanth/swarmgo/llm"
 	dotenv "github.com/joho/godotenv"
-	swarm "github.com/prathyushnallamothu/swarmgo"
-	"github.com/prathyushnallamothu/swarmgo/llm"
 )
 
 func main() {
@@ -131,7 +131,7 @@ ask them for user_id and method in one message.`,
 		Function: func(args map[string]interface{}, contextVariables map[string]interface{}) swarm.Result {
 			return swarm.Result{
 				Agent: salesAgent,
-				Data: "Transferring to SalesAgent.",
+				Data:  "Transferring to SalesAgent.",
 			}
 		},
 	}
@@ -146,7 +146,7 @@ ask them for user_id and method in one message.`,
 		Function: func(args map[string]interface{}, contextVariables map[string]interface{}) swarm.Result {
 			return swarm.Result{
 				Agent: refundsAgent,
-				Data: "Transferring to RefundsAgent.",
+				Data:  "Transferring to RefundsAgent.",
 			}
 		},
 	}

@@ -6,9 +6,9 @@ import (
 	"log"
 	"os"
 
+	swarmgo "github.com/allurisravanth/swarmgo"
+	"github.com/allurisravanth/swarmgo/llm"
 	dotenv "github.com/joho/godotenv"
-	swarmgo "github.com/prathyushnallamothu/swarmgo"
-	"github.com/prathyushnallamothu/swarmgo/llm"
 )
 
 // CustomStreamHandler implements the StreamHandler interface with custom behavior

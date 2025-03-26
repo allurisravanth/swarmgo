@@ -7,9 +7,9 @@ import (
 	"os"
 	"time"
 
+	"github.com/allurisravanth/swarmgo"
+	"github.com/allurisravanth/swarmgo/llm"
 	"github.com/joho/godotenv"
-	"github.com/prathyushnallamothu/swarmgo"
-	"github.com/prathyushnallamothu/swarmgo/llm"
 )
 
 // createMemoryAgent creates an agent with memory capabilities and custom functions
