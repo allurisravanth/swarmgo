@@ -22,8 +22,7 @@ func NewOpenAILLM(apiKey string) *OpenAILLM {
 }
 
 func NewOpenAILLMWithHost(apiKey string, host string) *OpenAILLM {
-	config := openai.DefaultConfig(apiKey)
-	config.BaseURL = host
+	config := openai.DefaultAzureConfig(apiKey, host)
 	openAIClient := openai.NewClientWithConfig(config)
 	return &OpenAILLM{client: openAIClient}
 }
