@@ -97,7 +97,7 @@ func (s *Swarm) StreamingResponse(
 		Stream:   true,
 	}
 
-	stream, err := s.client.CreateChatCompletionStream(ctx, req)
+	stream, err := s.Client.CreateChatCompletionStream(ctx, req)
 	if err != nil {
 		if debug {
 			fmt.Printf("Debug: Stream creation error: %v\n", err)
@@ -124,7 +124,7 @@ func (s *Swarm) StreamingResponse(
 			return err
 		}
 
-		newStream, err := s.client.CreateChatCompletionStream(ctx, req)
+		newStream, err := s.Client.CreateChatCompletionStream(ctx, req)
 		if err != nil {
 			if debug {
 				fmt.Printf("Debug: Error creating new stream: %v\n", err)

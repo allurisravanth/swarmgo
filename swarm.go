@@ -24,10 +24,10 @@ var (
 
 // Swarm represents the main structure
 type Swarm struct {
-	client       llm.LLM
-	tokenCounter func(string) int // Optional token counter function
-	initialized  bool             // Flag to check if Swarm is properly initialized
-	config       *Config          // Configuration settings
+	Client       llm.LLM
+	TokenCounter func(string) int // Optional token counter function
+	Initialized  bool             // Flag to check if Swarm is properly initialized
+	Config       *Config          // Configuration settings
 }
 
 // Config holds configuration options for Swarm
@@ -95,14 +95,6 @@ func NewSwarm(apiKey string, provider llm.LLMProvider) *Swarm {
 
 // NewSwarmWithConfig initializes a new Swarm with custom configuration
 func NewSwarmWithConfig(apiKey string, provider llm.LLMProvider, config *Config) *Swarm {
-	if apiKey == "" {
-		log.Println("Warning: Empty API key provided")
-		return &Swarm{
-			initialized: false,
-			config:      config,
-		}
-	}
-
 	var client llm.LLM
 	var err error
 
@@ -114,8 +106,8 @@ func NewSwarmWithConfig(apiKey string, provider llm.LLMProvider, config *Config)
 		if err != nil {
 			log.Printf("Failed to create Gemini client: %v", err)
 			return &Swarm{
-				initialized: false,
-				config:      config,
+				Initialized: false,
+				Config:      config,
 			}
 		}
 	case llm.Claude:
@@ -125,33 +117,24 @@ func NewSwarmWithConfig(apiKey string, provider llm.LLMProvider, config *Config)
 		if err != nil {
 			log.Printf("Failed to create Ollama client: %v", err)
 			return &Swarm{
-				initialized: false,
-				config:      config,
+				Initialized: false,
+				Config:      config,
 			}
 		}
 	case llm.DeepSeek:
 		client = llm.NewDeepSeekLLM(apiKey)
 	default:
-		log.Printf("Unsupported LLM provider: %v", provider)
+		log.Printf("New LLM provider: %v", provider)
 		return &Swarm{
-			initialized: false,
-			config:      config,
-		}
-	}
-
-	// Verify the client was created properly
-	if client == nil {
-		log.Println("Warning: Failed to initialize LLM client")
-		return &Swarm{
-			initialized: false,
-			config:      config,
+			Initialized: false,
+			Config:      config,
 		}
 	}
 
 	return &Swarm{
-		client:      client,
-		initialized: true,
-		config:      config,
+		Client:      client,
+		Initialized: true,
+		Config:      config,
 	}
 }
 
@@ -162,14 +145,14 @@ func NewSwarmWithHost(apiKey, host string, provider llm.LLMProvider) *Swarm {
 		if client == nil {
 			log.Println("Warning: Failed to initialize OpenAI client with custom host")
 			return &Swarm{
-				initialized: false,
-				config:      DefaultConfig(),
+				Initialized: false,
+				Config:      DefaultConfig(),
 			}
 		}
 		return &Swarm{
-			client:      client,
-			initialized: true,
-			config:      DefaultConfig(),
+			Client:      client,
+			Initialized: true,
+			Config:      DefaultConfig(),
 		}
 	}
 	log.Printf("Custom host not supported for provider: %v", provider)
@@ -179,20 +162,20 @@ func NewSwarmWithHost(apiKey, host string, provider llm.LLMProvider) *Swarm {
 // NewSwarmWithCustomProvider creates a Swarm with a custom LLM provider implementation
 func NewSwarmWithCustomProvider(providerImpl llm.LLM, config *Config) *Swarm {
 	return &Swarm{
-		client:      providerImpl,
-		initialized: true,
-		config:      config,
+		Client:      providerImpl,
+		Initialized: true,
+		Config:      config,
 	}
 }
 
 // SetTokenCounter sets a function to count tokens in messages
 func (s *Swarm) SetTokenCounter(counter func(string) int) {
-	s.tokenCounter = counter
+	s.TokenCounter = counter
 }
 
 // IsInitialized returns whether the Swarm is properly initialized
 func (s *Swarm) IsInitialized() bool {
-	return s.initialized && s.client != nil
+	return s.Initialized && s.Client != nil
 }
 
 // ValidateConnection tests the LLM connection with a simple request
@@ -203,7 +186,7 @@ func (s *Swarm) ValidateConnection(ctx context.Context) error {
 
 	// Create a simple test request
 	testRequest := llm.ChatCompletionRequest{
-		Model: s.config.DefaultModel,
+		Model: s.Config.DefaultModel,
 		Messages: []llm.Message{
 			{Role: llm.RoleUser, Content: "Test connection"},
 		},
@@ -211,7 +194,7 @@ func (s *Swarm) ValidateConnection(ctx context.Context) error {
 	}
 
 	// Attempt to send the request
-	_, err := s.client.CreateChatCompletion(ctx, testRequest)
+	_, err := s.Client.CreateChatCompletion(ctx, testRequest)
 	if err != nil {
 		return fmt.Errorf("connection test failed: %w", err)
 	}
@@ -288,7 +271,7 @@ func (s *Swarm) getChatCompletion(
 
 	// Use default model if none specified
 	if model == "" {
-		model = s.config.DefaultModel
+		model = s.Config.DefaultModel
 	}
 
 	req := llm.ChatCompletionRequest{
@@ -304,8 +287,8 @@ func (s *Swarm) getChatCompletion(
 
 	// Implement retry logic
 	var lastErr error
-	for attempt := 0; attempt <= s.config.MaxRetries; attempt++ {
-		if attempt > 0 && s.config.Debug {
+	for attempt := 0; attempt <= s.Config.MaxRetries; attempt++ {
+		if attempt > 0 && s.Config.Debug {
 			log.Printf("Retry attempt %d after error: %v", attempt, lastErr)
 		}
 
@@ -313,12 +296,12 @@ func (s *Swarm) getChatCompletion(
 		requestCtx := ctx
 		if _, hasDeadline := ctx.Deadline(); !hasDeadline {
 			var cancel context.CancelFunc
-			requestCtx, cancel = context.WithTimeout(ctx, s.config.RequestTimeout)
+			requestCtx, cancel = context.WithTimeout(ctx, s.Config.RequestTimeout)
 			defer cancel()
 		}
 
 		// Call the LLM to get a chat completion
-		resp, err := s.client.CreateChatCompletion(requestCtx, req)
+		resp, err := s.Client.CreateChatCompletion(requestCtx, req)
 		if err == nil {
 			// Success
 			return resp, nil
@@ -329,13 +312,13 @@ func (s *Swarm) getChatCompletion(
 
 		// Check for rate limit errors and apply the rate limit strategy
 		if isRateLimitError(err) {
-			switch s.config.RateLimitStrategy {
+			switch s.Config.RateLimitStrategy {
 			case RateLimitFail:
 				return llm.ChatCompletionResponse{}, fmt.Errorf("rate limit exceeded: %w", err)
 			case RateLimitQueue:
 				// Implement exponential backoff
-				backoff := s.config.RetryBackoff * time.Duration(1<<uint(attempt))
-				if s.config.Debug {
+				backoff := s.Config.RetryBackoff * time.Duration(1<<uint(attempt))
+				if s.Config.Debug {
 					log.Printf("Rate limit hit, backing off for %v", backoff)
 				}
 				select {
@@ -346,8 +329,8 @@ func (s *Swarm) getChatCompletion(
 				}
 			default: // RateLimitRetry
 				// Simple retry with backoff
-				backoff := s.config.RetryBackoff * time.Duration(attempt+1)
-				if s.config.Debug {
+				backoff := s.Config.RetryBackoff * time.Duration(attempt+1)
+				if s.Config.Debug {
 					log.Printf("Backing off for %v before retry", backoff)
 				}
 				time.Sleep(backoff)
@@ -357,7 +340,7 @@ func (s *Swarm) getChatCompletion(
 			return llm.ChatCompletionResponse{}, err
 		} else {
 			// For other errors, apply backoff
-			backoff := s.config.RetryBackoff * time.Duration(attempt+1)
+			backoff := s.Config.RetryBackoff * time.Duration(attempt+1)
 			time.Sleep(backoff)
 		}
 	}
@@ -575,7 +558,7 @@ func (s *Swarm) handleToolCalls(
 		}
 
 		// Get the follow-up response with proper context
-		followUpResp, err := s.client.CreateChatCompletion(followUpCtx, followUpReq)
+		followUpResp, err := s.Client.CreateChatCompletion(followUpCtx, followUpReq)
 
 		if err != nil {
 			if debug {
@@ -696,7 +679,7 @@ func (s *Swarm) Run(
 	}
 
 	// Get initial response
-	resp, err := s.client.CreateChatCompletion(ctx, req)
+	resp, err := s.Client.CreateChatCompletion(ctx, req)
 	if err != nil {
 		return Response{}, fmt.Errorf("chat completion error: %v", err)
 	}

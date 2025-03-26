@@ -32,7 +32,7 @@ func (m *MockLLM) CreateChatCompletionStream(ctx context.Context, req llm.ChatCo
 // NewMockSwarm initializes a new Swarm instance with a mock LLM client
 func NewMockSwarm(mockClient *MockLLM) *Swarm {
 	return &Swarm{
-		client: mockClient,
+		Client: mockClient,
 	}
 }
 
@@ -41,7 +41,7 @@ func TestNewSwarm(t *testing.T) {
 	apiKey := "test-api-key"
 	sw := NewSwarm(apiKey, llm.OpenAI)
 	assert.NotNil(t, sw)
-	assert.NotNil(t, sw.client)
+	assert.NotNil(t, sw.Client)
 }
 
 // TestNewSwarmWithHost tests the NewSwarmWithHost function
@@ -50,13 +50,13 @@ func TestNewSwarmWithHost(t *testing.T) {
 	host := "https://api.xxxxx.com"
 	sw := NewSwarmWithHost(apiKey, host, llm.OpenAI)
 	assert.NotNil(t, sw)
-	assert.NotNil(t, sw.client)
+	assert.NotNil(t, sw.Client)
 }
 
 func TestNewSwarmWithCustomProvider(t *testing.T) {
 	sw := NewSwarmWithCustomProvider(&MockLLM{}, &Config{})
 	assert.NotNil(t, sw)
-	assert.NotNil(t, sw.client)
+	assert.NotNil(t, sw.Client)
 }
 
 // TestFunctionToDefinition tests the FunctionToDefinition function
