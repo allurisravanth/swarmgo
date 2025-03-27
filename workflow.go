@@ -75,6 +75,22 @@ func NewWorkflow(apikey string, provider llm.LLMProvider, workflowType WorkflowT
 	}
 }
 
+func NewWorkflowWithHost(apikey string, host string, provider llm.LLMProvider, workflowType WorkflowType) *Workflow {
+	swarm := NewSwarmWithHost(apikey, host, provider)
+	return &Workflow{
+		swarm:         swarm,
+		agents:        make(map[string]*Agent),
+		connections:   make(map[string][]string),
+		workflowType:  workflowType,
+		sharedState:   make(map[string]interface{}),
+		agentStates:   make(map[string]map[string]interface{}),
+		teams:         make(map[TeamType][]*Agent),
+		teamLeaders:   make(map[TeamType]string),
+		routingLog:    make([]string, 0),
+		cycleHandling: StopOnCycle,
+	}
+}
+
 // SetCycleCallback sets a callback function to be called when a cycle is detected
 func (wf *Workflow) SetCycleCallback(callback func(from, to string) (bool, error)) {
 	wf.cycleCallback = callback
